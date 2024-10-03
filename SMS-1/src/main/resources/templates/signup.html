@@ -4,8 +4,8 @@
 <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-	<h3>Add User</h3>
-	<form action="#" th:action="@{/records}" th:object="${user}" enctype="multipart/form-data" method="post">
+	<legend>Register Here</legend>
+	<form class="form" action="#" th:action="@{/signup}" th:object="${user}" enctype="multipart/form-data" method="post">
 		<label for="name">Name</label>
 		<input type="text" th:field="*{Name}" id="name" placeholder="Name">
 		<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
@@ -23,8 +23,8 @@
 		<input type="password" th:field="*{Password}" id="password" placeholder="Password">
 		<span th:if="${#fields.hasErrors('password')}" th:errors="password"></span>
 		
-		<label for="password">Profile Picture</label>
-		 <input type="file" name="image" id="image" accept="image/*" class="form-control-file">
+		<!--<label for="password">Profile Picture</label>
+		 <input type="file" name="image" id="image" accept="image/*" class="form-control-file">-->
 		 
 		<input type="submit" value="submit">
 		

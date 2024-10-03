@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Registration Success</title>
+    <title>Records</title>
 </head>
 <body>
-<h1>Registration Successful</h1>
-<p>Welcome, <span th:text="${user.username}"></span>!</p>
-	<p><span th:text="${user.name}"></span></p>
-	<p><span th:text="${user.email}"></span></p>
+
+    <h1>User Records</h1>
+	
+	
+
+	<div th:each="user : ${userList}">
+	      <!--<p>ID: <span th:text="${user.ID}">[ID]</span></p>-->
+	      <p>Name: <span th:text="${user.name}">[Name]</span></p>
+	      <p>Email: <span th:text="${user.email}">[Email]</span></p>
+	      <p>Username: <span th:text="${user.username}">[Username]</span></p>
+	  </div>
 
 </body>
 </html>

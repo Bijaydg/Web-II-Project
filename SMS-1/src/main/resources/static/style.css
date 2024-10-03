@@ -64,6 +64,8 @@ h1{
 
 input{
 	margin:20px;
+	width:400px;
+	height:50px;
 }
 label.name-label{
 	width: 100px;
@@ -89,7 +91,6 @@ a:hover{
 	padding:10px;
 	gap:10px 0;
 }
-
 .legend{
 	font-size:2rem;
 	padding:20px 0px;
