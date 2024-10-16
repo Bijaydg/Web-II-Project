@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<html xmlns:th="http://www.thymeleaf.org">
@@ -23,15 +23,14 @@
 			<span th:if="${error}" th:text="${error}"></span>
 			<fieldset>
 				<form class="form" th:action="@{/home}" th:object="${user}" method="post">
-						<div class="mb-3">
-					  <label for="exampleFormControlInput2" class="form-label">Username</label>
-					  <input type="text" th:field="*{username}" class="form-control" id="exampleFormControlInput2" placeholder="Enter your username">
-					</div>
-
+					<div class="mb-3">
+					        <label for="exampleFormControlInput2" class="form-label">Username</label>
+					      <!--  <input type="text" th:field="*{username}" class="form-control" id="exampleFormControlInput2" placeholder="Enter your username">-->
+					    </div>
 				  
 				  <div class="mb-3">
 				    <label for="exampleInputPassword1" class="form-label">Password</label>
-				    <input type="password" th:field="*{Password}" class="form-control" id="exampleInputPassword1" placeholder="Password">
+				    <input type="password" th:field="*{password}" class="form-control" id="exampleInputPassword1" placeholder="Password">
 				  </div>
 				 
 				  <a href="/records">Submit Here</a>
@@ -43,4 +42,5 @@
 			
 			</fieldset>
 	</body>
-</html>
+</html>--
+

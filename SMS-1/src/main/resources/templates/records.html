@@ -1,20 +1,37 @@
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Records</title>
+    <title>User Records</title>
 </head>
 <body>
-
-    <h1>User Records</h1>
+    <h2>User List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Username</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${userList}">
+                <td th:text="${user.ID}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.username}"></td>
+                <td>
+                    <a th:href="@{/update/{id}(id=${user.ID})}">Update</a> |
+                    <a th:href="@{/delete/{id}(id=${user.ID})}">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 	
 	
-
-	<div th:each="user : ${userList}">
-	      <!--<p>ID: <span th:text="${user.ID}">[ID]</span></p>-->
-	      <p>Name: <span th:text="${user.name}">[Name]</span></p>
-	      <p>Email: <span th:text="${user.email}">[Email]</span></p>
-	      <p>Username: <span th:text="${user.username}">[Username]</span></p>
-	  </div>
-
+	<button type="submit">Add user</button>
 </body>
 </html>
+

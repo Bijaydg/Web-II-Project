@@ -8,7 +8,7 @@ import com.example.demo.entity.Intro;
 
 public interface IntroRepository extends JpaRepository<Intro, Integer> {
 
-	User findByEmail(String email);
+	User findByusername(String username);
     // JpaRepository already provides CRUD methods like save, findById, findAll, and deleteById
 	
 }

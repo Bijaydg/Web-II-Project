@@ -15,6 +15,21 @@ public class Intro {
     private String email;
     private String password;
     private String username;
+    public String getConfirmPassword() {
+		return ConfirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		ConfirmPassword = confirmPassword;
+	}
+
+
+
+
+
+
+	private String ConfirmPassword;
+    
 
     // Getters and Setters
     public int getID() {
@@ -56,6 +71,11 @@ public class Intro {
     public void setUsername(String username) {
         this.username = username;
     }
+    
+    
+
+	
+    
 
     @Override
     public String toString() {
