@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import jakarta.validation.Valid;  // Corrected import
-import org.hibernate.exception.ConstraintViolationException;  // Hibernate constraint violation
+import jakarta.validation.Valid;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Validated  // Enables method-level validation for the service
+@Validated
 public class IntroService {
 
     @Autowired
@@ -23,41 +23,43 @@ public class IntroService {
     @Autowired
     private IntroRepository introRepository;
 
-    // Method to get all users
+    // Get all users
     public List<Intro> getAllUsers() {
         return introRepository.findAll();
     }
 
-    // Method to get a user by ID
+    // Get user by ID
     public Optional<Intro> getUserById(int id) {
         return introRepository.findById(id);
     }
 
-    // Method to add a new user with validation
-    public void addUser(@Valid Intro user) {
+    // Add a new user
+    public Intro addUser(@Valid Intro user) {
         try {
-            // Encrypt the password before saving the user
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            introRepository.save(user);
+            return introRepository.save(user);
         } catch (ConstraintViolationException e) {
             throw new IllegalArgumentException("Validation failed: " + e.getMessage(), e);
         }
     }
 
-    // Method to update an existing user with validation
-    public void updateUser(@Valid Intro user) {
-        try {
-            // Encrypt the password if it's being updated
-        	if(user.getPassword()!=null && !user.getPassword().isEmpty())
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            introRepository.save(user);
-        } catch (ConstraintViolationException e) {
-            throw new IllegalArgumentException("Validation failed: " + e.getMessage(), e);
+    // Update an existing user
+    public Intro updateUser(int id, @Valid Intro user) {
+        Optional<Intro> existingUserOptional = introRepository.findById(id);
+        if (existingUserOptional.isPresent()) {
+            Intro existingUser = existingUserOptional.get();
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+            return introRepository.save(existingUser);
+        } else {
+            throw new IllegalArgumentException("User not found");
         }
     }
-    
 
-    // Method to delete a user by ID
+    // Delete a user
     public void deleteUser(int id) {
         introRepository.deleteById(id);
     }
