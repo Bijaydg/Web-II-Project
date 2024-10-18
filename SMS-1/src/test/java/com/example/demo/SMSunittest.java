@@ -1,143 +1,96 @@
 package com.example.demo;
 
-import static org.assertj.core.api.Assertions.assertThatNoException;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
+import com.example.demo.controller.SMSController;
+import com.example.demo.entity.Intro;
+import com.example.demo.service.IntroService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.example.demo.entity.Intro;
-import com.example.demo.repository.IntroRepository;
-import com.example.demo.service.IntroService;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
+import org.mockito.MockitoAnnotations;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-@ExtendWith(MockitoExtension.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 public class SMSunittest {
 
-    @Mock
-    private IntroRepository introRepository;
-
     @InjectMocks
+    private SMSController smsController;
+
+    @Mock
     private IntroService introService;
 
-    private Validator validator;
+    @Mock
+    private Model model;
 
     @BeforeEach
-    void setup() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-        List<Intro> userList = new ArrayList<>();
+
+    @Test
+    public void testHandleSignup() {
         Intro user = new Intro();
-        user.setID(1);
-        user.setName("John Doe");
-        user.setEmail("john.doe@example.com");
-        userList.add(user);
-
-        when(introRepository.save(any(Intro.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        when(introRepository.findAll()).thenReturn(userList);
-        when(introRepository.findById(1)).thenReturn(Optional.of(user));
-        when(introRepository.findById(99)).thenReturn(Optional.empty());
-        Mockito.doNothing().when(introRepository).deleteById(any());
+        smsController.handleSignup(user);
+        verify(introService).addUser(user);
     }
 
     @Test
-    void testCreateUserSuccess() {
+    public void testShowRecord() {
+        List<Intro> users = new ArrayList<>();
+        when(introService.getAllUsers()).thenReturn(users);
+
+        String viewName = smsController.showRecord(model);
+        assertEquals("records", viewName);
+        verify(model).addAttribute("userList", users);
+    }
+
+    @Test
+    public void testEditUserForm_UserExists() {
         Intro user = new Intro();
-        user.setName("Jane Doe");
-        user.setEmail("janedoe@example.com");
-        user.setPassword("password123");
+        user.setID(1); // Assuming there's a setId method
+        when(introService.getUserById(1)).thenReturn(Optional.of(user));
 
-        Intro createdUser = introService.addUser(user);
-        assertEquals("Jane Doe", createdUser.getName());
-        assertThatNoException();
+        String viewName = smsController.editUserForm(1, model);
+        assertEquals("update", viewName);
+        verify(model).addAttribute("user", user);
     }
 
     @Test
-    void testCreateUserFailureValidation() {
+    public void testEditUserForm_UserDoesNotExist() {
+        when(introService.getUserById(1)).thenReturn(Optional.empty());
+
+        String viewName = smsController.editUserForm(1, model);
+        assertEquals("redirect:/records", viewName);
+    }
+
+    @Test
+    public void testUpdateUser_Success() {
         Intro user = new Intro();
-        user.setName(null); // Invalid user
-
-        Set<ConstraintViolation<Intro>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
+        smsController.updateUser(1, user, model);
+        verify(introService).updateUser(1, user);
     }
 
     @Test
-    void testUpdateUserSuccess() {
-        Intro userToUpdate = new Intro();
-        userToUpdate.setID(1);
-        userToUpdate.setName("Updated Name");
-        userToUpdate.setEmail("updated@example.com");
-        userToUpdate.setPassword("newpassword123");
+    public void testUpdateUser_Error() {
+        Intro user = new Intro();
+        doThrow(new IllegalArgumentException("Error")).when(introService).updateUser(1, user);
 
-        Intro updatedUser = introService.updateUser(1, userToUpdate);
-        assertEquals("Updated Name", updatedUser.getName());
+        String viewName = smsController.updateUser(1, user, model);
+        assertEquals("update", viewName);
+        verify(model).addAttribute("errorMessage", "Error");
     }
 
     @Test
-    void testUpdateUserFailureNotFound() {
-        Intro userToUpdate = new Intro();
-        userToUpdate.setID(99);
-        userToUpdate.setName("Nonexistent User");
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            introService.updateUser(99, userToUpdate);
-        });
-        assertEquals("User not found", exception.getMessage());
-    }
-
-    @Test
-    void testGetAllUsersSuccess() {
-        List<Intro> userList = introService.getAllUsers();
-        assertEquals(1, userList.size());
-        assertEquals("John Doe", userList.get(0).getName());
-    }
-
-    @Test
-    void testGetAllUsersEmptyList() {
-        when(introRepository.findAll()).thenReturn(new ArrayList<>());
-        List<Intro> userList = introService.getAllUsers();
-        assertTrue(userList.isEmpty());
-    }
-
-    @Test
-    void testGetUserByIdSuccess() {
-        Optional<Intro> user = introService.getUserById(1);
-        assertTrue(user.isPresent());
-        assertEquals("John Doe", user.get().getName());
-    }
-
-    @Test
-    void testGetUserByIdFailureNotFound() {
-        Optional<Intro> user = introService.getUserById(99);
-        assertTrue(user.isEmpty());
-    }
-
-    @Test
-    void testDeleteUserSuccess() {
-        introService.deleteUser(1);
-        assertThatNoException();
-    }
-
-    @Test
-    void testDeleteUserFailureUserNotFound() {
-        Mockito.doThrow(new RuntimeException("User not found")).when(introRepository).deleteById(99);
-        assertThrows(RuntimeException.class, () -> introService.deleteUser(99));
+    public void testDeleteUser() {
+        smsController.deleteUser(1);
+        verify(introService).deleteUser(1);
     }
 }

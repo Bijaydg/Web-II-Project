@@ -30,6 +30,11 @@ public class Intro {
 
 	private String ConfirmPassword;
     
+//	public Intro(String name, String email, String password) {
+//        this.name = name;
+//        this.email = email;
+//        this.password = password;
+//    }
 
     // Getters and Setters
     public int getID() {
